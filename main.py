@@ -2,12 +2,18 @@ import pyxel
 import random
 
 class Fungus:
-    def __init__(self, x, y):
+    COLOR_PALETTE = [8, 3, 1, 9, 5]  # 红/绿/蓝/橙/紫
+
+    def __init__(self, x, y, color=None):
         self.x = x
         self.y = y
-        self.health = 100  # 初始生命力
-        self.color = 8 + (self.health // 25)  # 根据生命力选择8-11号红色系
+        self.health = 100
+        self.color = color if color else random.choice(self.COLOR_PALETTE)
         self.reproduction_cooldown = 0
+
+    def reproduce(self):
+        # 繁殖时继承颜色
+        return Fungus(new_x, new_y, self.color)
 
     def update(self):
         # 自然消耗
@@ -15,14 +21,13 @@ class Fungus:
         
         # 繁殖逻辑
         if self.health > 80 and self.reproduction_cooldown <= 0:
-            # 寻找相邻空位
-            new_x = self.x + random.choice([-10, 0, 10])
-            new_y = self.y + random.choice([-10, 0, 10])
+            # 生成有效坐标
+            new_x = self.x + random.choice([-10,0,10])
+            new_y = self.y + random.choice([-10,0,10])
             
-            # 检查新位置是否在边界内
             if 0 <= new_x <= pyxel.width and 0 <= new_y <= pyxel.height:
-                self.reproduction_cooldown = 30  # 繁殖冷却时间
-                return Fungus(new_x, new_y)
+                self.reproduction_cooldown = 30
+                return Fungus(new_x, new_y, self.color)  # 传递坐标和颜色
         return None
 
 class TribUngus:
@@ -63,8 +68,8 @@ class TribUngus:
         
         # 增大菌类显示尺寸为8x8像素
         for fungus in self.fungi:
-            color_index = 8 + (fungus.health // 25)  # 8深红 -> 11浅红
-            pyxel.rect(fungus.x, fungus.y, 10, 10, color_index)
+            # 绘制时使用颜色属性
+            pyxel.rect(fungus.x, fungus.y, 10, 10, fungus.color)
         
         # 调整UI元素位置
         # 动态UI布局
