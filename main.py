@@ -67,10 +67,17 @@ class TribUngus:
             pyxel.rect(fungus.x, fungus.y, 10, 10, color_index)
         
         # 调整UI元素位置
-        pyxel.text(10, 10, f"菌群数量: {len(self.fungi)}", 0)
-        pyxel.text(10, 25, f"FPS: {pyxel.frame_count%60}", 0)
-        # 显示当前分辨率
-        pyxel.text(5, 5, f'分辨率: {self.size}x{self.size}', 0)
+        # 动态UI布局
+        base_size = self.size // 32
+        line_height = base_size * 10
+        
+        # 分辨率显示（左上角）
+        pyxel.text(base_size, base_size, f'分辨率: {self.size}x{self.size}', 7 if self.size < 256 else 0)
+        
+        # 游戏数据（右上角）
+        stats_x = self.size - 12*base_size
+        pyxel.text(stats_x, base_size, f'菌群数量: {len(self.fungi)}', 0)
+        pyxel.text(stats_x, base_size + line_height, f'FPS: {pyxel.frame_count%60}', 0)
 
 if __name__ == "__main__":
     TribUngus()
