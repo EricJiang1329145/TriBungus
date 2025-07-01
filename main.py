@@ -43,7 +43,7 @@ class TribUngus:
                 print('请输入有效数字')
         
         pyxel.init(self.size, self.size, title="菌类战争", fps=24)
-        self.fungi = [Fungus(random.randint(0, pyxel.width), random.randint(0, pyxel.height)) for _ in range(3)]
+        self.fungi = [Fungus(random.randint(0, pyxel.width), random.randint(0, pyxel.height))]
         pyxel.mouse(True)
         
         self.fungi = [Fungus(random.randint(0,384), random.randint(0,384)) 
@@ -52,6 +52,11 @@ class TribUngus:
         pyxel.run(self.update, self.draw)
 
     def update(self):
+        # 添加鼠标点击生成
+        if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
+            mx, my = pyxel.mouse_x, pyxel.mouse_y
+            if 0 <= mx <= pyxel.width and 0 <= my <= pyxel.height:
+                self.fungi.append(Fungus(mx, my))
         if pyxel.btnp(pyxel.KEY_ESCAPE):
             pyxel.quit()
         # 更新所有菌类
