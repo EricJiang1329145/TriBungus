@@ -1,31 +1,35 @@
 import pyxel
 import random
+import json
+import os
+
+# 加载颜色配置文件
+def load_colors():
+    try:
+        with open(os.path.join(os.path.dirname(__file__), 'colors.json'), 'r') as f:
+            return json.load(f)
+    except Exception as e:
+        print(f"加载颜色配置文件失败: {e}")
+        return None
+
+# 全局颜色配置
+color_config = load_colors()
 
 class Fungus:
-    class ColorPalette:
-        RED = 0xFF004D      # 索引 8 的默认颜色
-        GREEN = 0x00E436    # 索引 11 的默认颜色
-        BLUE = 0x29ADFF     # 索引 12 的默认颜色
-        ORANGE = 0xFFA300   # 索引 9 的默认颜色
-        PURPLE = 0x83769C   # 索引 13 的默认颜色
-        MIKU = 0x39C5BB     # 自定义颜色
-        CHINA_RED = 0xFF004D # 使用默认红色
-
-    COLOR_PALETTE = [
-        ColorPalette.RED,
-        ColorPalette.GREEN,
-        ColorPalette.BLUE,
-        ColorPalette.ORANGE,
-        ColorPalette.PURPLE,
-        ColorPalette.MIKU,
-        ColorPalette.CHINA_RED
-    ]
+    # 动态加载颜色调色板
+    @staticmethod
+    def get_color_palette():
+        if color_config and 'colors' in color_config:
+            return [int(color['hex'], 16) for color in color_config['colors']]
+        else:
+            # 默认颜色，以防配置文件加载失败
+            return [0xFF004D, 0x00E436, 0x29ADFF, 0xFFA300, 0x83769C, 0x39C5BB]
 
     def __init__(self, x, y, color=None):
         self.x = x
         self.y = y
         self.health = 100
-        self.color = color if color else random.choice(self.COLOR_PALETTE)
+        self.color = color if color else random.choice(self.get_color_palette())
         self.reproduction_cooldown = 0
 
     def reproduce(self):
@@ -54,16 +58,16 @@ class TribUngus:
         pyxel.init(self.size, self.size, title="菌类战争", fps=24)
         
         # 设置自定义颜色
-        default_colors = [
-            0x000000, 0x1D2B53, 0x7E2553, 0x008751,
-            0xAB5236, 0x5F574F, 0xC2C3C7, 0xFFF1E8,
-            0xFF004D, 0xFFA300, 0xFFEC27, 0x00E436,
-            0x29ADFF, 0x83769C, 0xFF77A8, 0xFFCCAA
-        ]
-        
-        # 修改初音绿颜色
-        pyxel.colors = default_colors.copy()
-        pyxel.colors[3] = 0x39C5BB  # 初音绿
+        if color_config:
+            # 加载默认调色板
+            if 'default_palette' in color_config:
+                default_colors = [int(color, 16) for color in color_config['default_palette']]
+                pyxel.colors = default_colors.copy()
+            
+            # 应用自定义颜色
+            if 'custom_colors' in color_config:
+                for index, hex_color in color_config['custom_colors'].items():
+                    pyxel.colors[int(index)] = int(hex_color, 16)
         
         self.fungi = [Fungus(random.randint(0, pyxel.width), random.randint(0, pyxel.height))]
         pyxel.mouse(True)
@@ -99,7 +103,13 @@ class TribUngus:
         pyxel.text(stats_x, base_size + line_height, f'FPS: {pyxel.frame_count%60}', 0)
     
     def _get_color_index(self, hex_color):
-        # 将16进制颜色映射回索引
+        # 从配置文件中获取颜色映射
+        if color_config and 'colors' in color_config:
+            for color in color_config['colors']:
+                if int(color['hex'], 16) == hex_color:
+                    return color['index']
+        
+        # 默认颜色映射，以防配置文件加载失败
         color_map = {
             0xFF004D: 8,  # RED
             0x00E436: 11, # GREEN
