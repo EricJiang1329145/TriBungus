@@ -2,7 +2,24 @@ import pyxel
 import random
 
 class Fungus:
-    COLOR_PALETTE = [8, 3, 1, 9, 5]  # 红/绿/蓝/橙/紫
+    class ColorPalette:
+        RED = 8
+        GREEN = 3
+        BLUE = 1
+        ORANGE = 9
+        PURPLE = 5
+        MIKU = 2
+        CHINA_RED = 4
+
+    COLOR_PALETTE = [
+        ColorPalette.RED,
+        ColorPalette.GREEN,
+        ColorPalette.BLUE,
+        ColorPalette.ORANGE,
+        ColorPalette.PURPLE,
+        ColorPalette.MIKU,
+        ColorPalette.CHINA_RED
+    ]
 
     def __init__(self, x, y, color=None):
         self.x = x
