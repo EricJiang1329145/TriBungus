@@ -43,6 +43,16 @@ class TribUngus:
                 print('请输入有效数字')
         
         pyxel.init(self.size, self.size, title="菌类战争", fps=24)
+        # 配置调色板RGB值
+        pyxel.colors[8] = 0xFF0000   # 红色
+        pyxel.colors[3] = 0x00FF00   # 绿色
+        pyxel.colors[1] = 0x0000FF   # 蓝色
+        pyxel.colors[9] = 0xFFA500   # 橙色
+        pyxel.colors[5] = 0x800080   # 紫色
+        
+        # 新增经典颜色
+        pyxel.colors[2] = 0x39C5BB   # 初音绿
+        pyxel.colors[4] = 0xCD071E   # 中国红
         self.fungi = [Fungus(random.randint(0, pyxel.width), random.randint(0, pyxel.height))]
         pyxel.mouse(True)
         
